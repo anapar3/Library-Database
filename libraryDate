@@ -1,0 +1,174 @@
+public class libraryDate {
+ private String month = "";
+ private String year = "";
+ private String day = "";
+ private Integer d;
+ private Integer m;
+ private Integer y;
+ // checks for a valid input
+ public boolean checkValid(String dateInput) {
+  setVariables(dateInput);
+  if (checkInput(dateInput) == true && year.length() == 4) {
+   if (checkMonth() == true && checkYear() == true && checkDay() == true)
+    return true;
+   else
+    return false;
+  } else
+   return false;
+ }
+ // sets variables for day, month, and year
+ private void setVariables(String da) {
+  month = "";
+  year = "";
+  day = "";
+  d = 0;
+  m = 0;
+  y = 0;
+  for (int i = 0; i < 2; i++) {
+   Character c = new Character(da.charAt(i));
+   if (Character.isWhitespace(c) == false)
+    month += c;
+  }
+  for (int j = 3; j < 5; j++) {
+   Character c = new Character(da.charAt(j));
+   if (Character.isWhitespace(c) == false)
+    day += c;
+  }
+  for (int k = 6; k < da.length(); k++) {
+   Character c = new Character(da.charAt(k));
+   if (Character.isWhitespace(c) == false)
+    year += c;
+  }
+  Integer mon = new Integer(String.valueOf(month));
+  m = mon;
+  Integer day1 = new Integer(String.valueOf(day));
+  d = day1;
+  Integer ye = new Integer(String.valueOf(year));
+  y = ye;
+ }
+ private boolean checkInput(String da) {
+  // check for 2 slashes
+  int count = 0;
+  for (int i = 0; i < da.length(); i++) {
+   if (da.charAt(i) == '/')
+    count++;
+  }
+  // check for characters
+  boolean characters = false;
+  for (int i = 0; i < da.length(); i++) {
+   Character c = new Character(da.charAt(i));
+   if (Character.isAlphabetic(c) == true) {
+    characters = true;
+    break;
+   }
+  }
+  if (count == 2 && characters == false) {
+   return true;
+  } else {
+   return false;
+  }
+ }
+ // checks for valid month
+ private boolean checkMonth() {
+  Integer mon = new Integer(String.valueOf(month));
+  m = mon;
+  if (mon < 1 || mon > 12)
+   return false;
+  else
+   return true;
+ }
+ // checks for valid year
+ private boolean checkYear() {
+  Integer ye = new Integer(String.valueOf(year));
+  y = ye;
+  if (ye < 1)
+   return false;
+  else
+   return true;
+ }
+ // checks for valid day
+ private boolean checkDay() {
+  Integer da = new Integer(String.valueOf(day));
+  d = da;
+  if (da < 1)
+   return false;
+  else if ((m == 1 || m == 3 || m == 5 || m == 7 || m == 9 || m == 10 || m == 12) && (da > 31))
+   return false;
+  else if ((m == 4 || m == 6 || m == 8 || m == 11) && da > 30)
+   return false;
+  else if (m == 2) {
+   if (leap() == true && da > 29)
+    return false;
+   else if (leap() == false && da > 28)
+    return false;
+   else
+    return true;
+  } else
+   return true;
+ }
+ // checks if leap year
+ private boolean leap() {
+  if (y % 4 == 0) {
+   if (y % 100 == 0) {
+    if (y % 400 == 0)
+     return true;
+    else
+     return false;
+   } else
+    return true;
+  } else
+   return false;
+ }
+ // checks if book is overdue
+ public boolean checkOverdue(String currDate, String borrDate) {
+  int nextDay = 0;
+  int nextMonth = 0;
+  int nextYear = 0;
+  // finds date 2 weeks from the borrow date
+  setVariables(borrDate);
+  if (d > 16 && (m == 4 || m == 6 || m == 8 || m == 11)) {
+   nextDay = (30 - d) + 14;
+   nextMonth = m + 1;
+   nextYear = y;
+  } else if (d > 17 && (m == 1 || m == 3 || m == 5 || m == 7 || m == 9 || m == 10)) {
+   nextDay = (31 - d) + 14;
+   nextMonth = m + 1;
+   nextYear = y;
+  } else if (m == 2) {
+   if (leap() == true) {
+    if (d > 15) {
+     nextDay = (29 - d) + 14;
+     nextMonth = 3;
+     nextYear = y;
+    }
+   } else if (d > 14) {
+    nextDay = (28 - d) + 14;
+    nextMonth = 3;
+    nextYear = y;
+   } else {
+    nextDay = d + 14;
+    nextMonth = 2;
+    nextYear = y;
+   }
+  } else if (m == 12 && d > 17) {
+   nextDay = (31 - d) + 14;
+   nextMonth = 1;
+   nextYear = y + 1;
+  } else {
+   nextDay = d + 14;
+   nextMonth = m;
+   nextYear = y;
+  }
+  // sets month, day, and year integer variables to the current date
+  setVariables(currDate);
+  // finds if the current date is over the 2 week date
+  if (y > nextYear)
+   return true;
+  else if (m > nextMonth)
+   return true;
+  else if (m == nextMonth && y == nextYear && d > nextDay)
+   return true;
+  else
+   return false;
+ }
+}
