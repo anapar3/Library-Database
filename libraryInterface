@@ -1,0 +1,166 @@
+import java.util.ArrayList;
+import javax.swing.*;
+import BreezySwing.*;
+public class libraryInterface extends GBFrame {
+ private ArrayList<String[]> info = new ArrayList<String[]>();
+ private JTextArea outputTable;
+ private libraryDate d = new libraryDate();
+ // clears output area
+ public void clearText(JTextArea table) {
+  outputTable = table;
+  outputTable.setText("");
+ }
+ // checks for valid date input
+ public boolean checkValidDate(String date) {
+  if (d.checkValid(date) == true)
+   return true;
+  else
+   return false;
+ }
+ // adds new book to array list
+ public void newBook(String title, String author) {
+  String[] book = new String[4];
+  book[0] = title.trim();
+  book[1] = author.trim();
+  book[2] = "";
+  book[3] = "";
+  info.add(book);
+ }
+ // searches for a specific book
+ public void search(String title) {
+  String output = "";
+  String[] f = new String[4];
+  for (int i = 0; i < info.size(); i++) {
+   f = info.get(i);
+   if (title.equals(f[0]) == true) {
+    for (int h = 0; h < 4; h++) {
+     if (h == 0)
+      outputTable.append("Title: ");
+     if (h == 1)
+      outputTable.append("Author: ");
+     if (h == 2)
+      outputTable.append("Borrow Name: ");
+     if (h == 3)
+      outputTable.append("Borrow Date: ");
+     outputTable.append(f[h] + "\n");
+     output += f[h] + "\n";
+    }
+   }
+   outputTable.append("\n");
+  }
+  if (output.equals(""))
+   outputTable.append("There is no book of that name!\n");
+ }
+ // prints all books
+ public void printAllBooks() {
+  int counter = 1;
+  for (int i = 0; i < info.size(); i++) {
+   String[] f = new String[4];
+   f = info.get(i);
+   outputTable.append("Book " + counter + ": \n");
+   counter++;
+   for (int h = 0; h < 2; h++) {
+    if (h == 0)
+     outputTable.append("Title: ");
+    if (h == 1)
+     outputTable.append("Author: ");
+    outputTable.append(f[h] + "\n");
+   }
+  }
+ }
+ // checks if book is in library
+ public int checkValidTitle(String title) {
+  boolean valid = true;
+  int index = 0;
+  String[] f = new String[4];
+  for (int i = 0; i < info.size(); i++) {
+   f = info.get(i);
+   if (title.equals(f[0]) == true) {
+    valid = true;
+    index = i;
+    break;
+   } else
+    valid = false;
+  }
+  if (valid == false) {
+   index = 999;
+  }
+  return index;
+ }
+ // checks if book is available
+ public boolean checkAvailable(String title, int index) {
+  boolean available = true;
+  String[] g = info.get(index);
+  if (g[2].equals("") && g[3].equals(""))
+   available = true;
+  else
+   available = false;
+  return available;
+ }
+ // loans out a specific book
+ public void loanOutBook(String title, String name, String date) {
+  String[] f = new String[4];
+  for (int i = 0; i < info.size(); i++) {
+   f = info.get(i);
+   if (title.equals(f[0]) == true) {
+    f[2] = name;
+    f[3] = date;
+    info.set(i, f);
+   }
+  }
+ }
+ // checks if book has been borrowed
+ public boolean checkIfBorrowed(int index) {
+  boolean borrowed;
+  String[] f = new String[4];
+  f = info.get(index);
+  if (f[2].trim() == "" && f[3].trim() == "")
+   borrowed = false;
+  else
+   borrowed = true;
+  return borrowed;
+ }
+ // returns a specific book
+ public void returnBook(int index) {
+  String[] f = new String[4];
+  f = info.get(index);
+  f[2] = "";
+  f[3] = "";
+  info.set(index, f);
+ }
+ // prints all borrowed books
+ public void printBorrowedBooks() {
+  String[] f = new String[4];
+  int count = 1;
+  for (int i = 0; i < info.size(); i++) {
+   f = info.get(i);
+   if (!(f[2].isEmpty()) && !(f[3].isEmpty())) {
+    outputTable.append("Book " + count + ":\n");
+    outputTable.append("Title: " + f[0] + "\n");
+    outputTable.append("Author: " + f[1] + "\n");
+    outputTable.append("Name Borrowed: " + f[2] + "\n");
+    outputTable.append("Date Borrowed: " + f[3] + "\n");
+    count++;
+   }
+  }
+ }
+ // prints overdue books
+ public void printOverdueBooks(String currentDate) {
+  int count = 1;
+  if (d.checkValid(currentDate) == true) {
+   String[] f = new String[4];
+   outputTable.append("These books are overdue: \n\n");
+   for (int i = 0; i < info.size(); i++) {
+    f = info.get(i);
+    if (d.checkOverdue(currentDate, f[3]) == true) {
+     outputTable.append("Book " + count + ":\n");
+     outputTable.append("Title: " + f[0] + "\n");
+     outputTable.append("Author: " + f[1] + "\n");
+     outputTable.append("Name Borrowed: " + f[2] + "\n");
+     outputTable.append("Date Borrowed: " + f[3] + "\n");
+     count++;
+    }
+   }
+  }
+ }
+}
