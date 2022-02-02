@@ -1,0 +1,182 @@
+//Antara Parmar
+//Library Program
+//11-20-19
+//This program serves as a library catalog
+import javax.swing.*;
+import BreezySwing.*;
+public class libraryGUI extends GBFrame {
+ //sets up GUI
+ JLabel nameLabel = addLabel("Book Title:", 1, 1, 1, 1);
+ JLabel authorLabel = addLabel("Author:", 2, 1, 1, 1);
+ JLabel nameBorrowedLabel = addLabel("Name Borrowed:", 3, 1, 1, 1);
+ JLabel dateBorrowedLabel = addLabel("Date Borrowed:", 4, 1, 1, 1);
+ JTextField bookName = addTextField("", 1, 2, 1, 1);
+ JTextField bookAuthor = addTextField("", 2, 2, 1, 1);
+ JTextField nameBorrowed = addTextField("", 3, 2, 1, 1);
+ JTextField dateBorrowed = addTextField("", 4, 2, 1, 1);
+ JButton addBook = addButton("Add Book", 1, 3, 1, 1);
+ JButton searchBook = addButton("Search", 2, 3, 1, 1);
+ JButton printAll = addButton("Print All", 3, 3, 1, 1);
+ JButton loanOut = addButton("Loan Out", 4, 3, 1, 1);
+ JButton returnBook = addButton("Return Book", 5, 3, 1, 1);
+ JButton printBorrowed = addButton("Print Borrowed", 6, 3, 1, 1);
+ JButton printOverdue = addButton("Print Overdue", 7, 3, 1, 1);
+ JButton doneButton = addButton("Done", 3, 3, 1, 1);
+ JButton enterDateButton = addButton("Enter Date", 3, 3, 1, 1);
+ JLabel currentDateLabel = addLabel("Current Date:", 3, 1, 1, 1);
+ JTextField currentDate = addTextField("", 3, 2, 1, 1);
+ JTextArea finalOutput = addTextArea("", 5, 1, 2, 3);
+ libraryInterface l = new libraryInterface();
+ private String titleLoan = "";
+ public libraryGUI() {
+  // sets up initial GUI
+  currentDateLabel.setVisible(false);
+  currentDate.setVisible(false);
+  nameBorrowed.setVisible(false);
+  dateBorrowed.setVisible(false);
+  nameBorrowedLabel.setVisible(false);
+  dateBorrowedLabel.setVisible(false);
+  doneButton.setVisible(false);
+  enterDateButton.setVisible(false);
+ }
+ public void buttonClicked(JButton buttonObj) {
+  l.clearText(finalOutput);
+  // adds new book
+  if (buttonObj == addBook) {
+   l.newBook(bookName.getText(), bookAuthor.getText());
+   clearFields();
+  }
+  // searches for a specific book
+  if (buttonObj == searchBook) {
+   l.search(bookName.getText());
+   clearFields();
+  }
+  // prints all books
+  if (buttonObj == printAll) {
+   l.printAllBooks();
+   clearFields();
+  }
+  // loans a specific book out
+  if (buttonObj == loanOut) {
+   titleLoan = bookName.getText();
+   // checks if book is in library
+   int in = l.checkValidTitle(titleLoan);
+   if (in != 999) {
+    // checks if book has been checked out
+    if (l.checkAvailable(titleLoan, in) == true) {
+     // resets GUI to allow the user to enter borrow name and borrow date
+     nameBorrowed.setVisible(true);
+     dateBorrowed.setVisible(true);
+     nameBorrowedLabel.setVisible(true);
+     dateBorrowedLabel.setVisible(true);
+     doneButton.setVisible(true);
+     addBook.setVisible(false);
+     searchBook.setVisible(false);
+     printAll.setVisible(false);
+     loanOut.setVisible(false);
+     returnBook.setVisible(false);
+     printBorrowed.setVisible(false);
+     printOverdue.setVisible(false);
+     bookName.setVisible(false);
+     bookAuthor.setVisible(false);
+     nameLabel.setVisible(false);
+     authorLabel.setVisible(false);
+    } else
+     messageBox("Book is not available");
+   } else
+    messageBox("Not a valid book title");
+   clearFields();
+  }
+  // takes in borrowing information after user input
+  if (buttonObj == doneButton) {
+   // checks for valid borrow date
+   if (l.checkValidDate(dateBorrowed.getText()) == true) {
+    l.loanOutBook(titleLoan, nameBorrowed.getText(), dateBorrowed.getText());
+    nameBorrowed.setVisible(false);
+    dateBorrowed.setVisible(false);
+    nameBorrowedLabel.setVisible(false);
+    dateBorrowedLabel.setVisible(false);
+    doneButton.setVisible(false);
+    addBook.setVisible(true);
+    searchBook.setVisible(true);
+    printAll.setVisible(true);
+    loanOut.setVisible(true);
+    returnBook.setVisible(true);
+    printBorrowed.setVisible(true);
+    printOverdue.setVisible(true);
+    bookName.setVisible(true);
+    bookAuthor.setVisible(true);
+    nameLabel.setVisible(true);
+    authorLabel.setVisible(true);
+   } else
+    messageBox("Please enter valid date!");
+  }
+  // returns a specific book
+  if (buttonObj == returnBook) {
+   // checks if book is in library and checked out already
+   int in = l.checkValidTitle(bookName.getText());
+   if (in != 999) {
+    if (l.checkIfBorrowed(in) == true)
+     l.returnBook(in);
+    else
+     messageBox("Not checked out!");
+   }
+   clearFields();
+  }
+  // prints all borrowed books
+  if (buttonObj == printBorrowed) {
+   l.printBorrowedBooks();
+   clearFields();
+  }
+  // prints overdue books
+  if (buttonObj == printOverdue) {
+   currentDateLabel.setVisible(true);
+   currentDate.setVisible(true);
+   enterDateButton.setVisible(true);
+   addBook.setVisible(false);
+   searchBook.setVisible(false);
+   printAll.setVisible(false);
+   loanOut.setVisible(false);
+   returnBook.setVisible(false);
+   printBorrowed.setVisible(false);
+   printOverdue.setVisible(false);
+   bookName.setVisible(false);
+   bookAuthor.setVisible(false);
+   nameLabel.setVisible(false);
+   authorLabel.setVisible(false);
+   clearFields();
+  }
+  // accepts the current date prints overdue books
+  if (buttonObj == enterDateButton) {
+   l.printOverdueBooks(currentDate.getText());
+   currentDateLabel.setVisible(false);
+   currentDate.setVisible(false);
+   enterDateButton.setVisible(false);
+   addBook.setVisible(true);
+   searchBook.setVisible(true);
+   printAll.setVisible(true);
+   loanOut.setVisible(true);
+   returnBook.setVisible(true);
+   printBorrowed.setVisible(true);
+   printOverdue.setVisible(true);
+   bookName.setVisible(true);
+   bookAuthor.setVisible(true);
+   nameLabel.setVisible(true);
+   authorLabel.setVisible(true);
+  }
+ }
+ // clears fields after input
+ public void clearFields() {
+  bookName.setText("");
+  bookAuthor.setText("");
+  nameBorrowed.setText("");
+  dateBorrowed.setText("");
+ }
+ // sets up GUI
+ public static void main(String[] args) {
+  JFrame frm = new libraryGUI();
+  frm.setTitle("Library Program");
+  frm.setSize(800, 800);
+  frm.setVisible(true);
+ }
+}
